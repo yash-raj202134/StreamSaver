@@ -3,13 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download Progress</title>
+    <title>StreamSaver - Download Progress</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="container mt-5">
+    <header class="header text-center">
+        <div class="container">
+            <h1 class="display-4 animate__fadeIn">StreamSaver</h1>
+            <p class="lead animate__fadeIn animate__delay-1s">Your ultimate tool for fast and reliable video downloads.</p>
+        </div>
+    </header>
+
+    <main class="container mt-5">
         <h1 class="mb-4 text-center display-4 fw-bold text-primary animate__fadeIn">Download Progress</h1>
         
         <div class="card mb-4 shadow-sm animate__fadeInUp animate__delay-1s">
@@ -32,17 +42,17 @@
                         <span class="stat-label">Pending:</span> <span id="pending">0</span>
                     </div>
                     <div class="col-md-2 mb-2">
-                        <span class="stat-label">Speed:</span> <span id="speed">0</span> MB/s
+                        <span class="stat-label">Speed:</span> <span id="speed">0.00</span> MB/s
                     </div>
                 </div>
             </div>
         </div>
         
         <div class="mb-4 d-flex justify-content-center gap-2 flex-wrap animate__fadeInUp animate__delay-2s">
-            <button id="downloadZip" class="btn btn-primary btn-bounce">
+            <button id="downloadZip" class="btn btn-primary btn-bounce" disabled>
                 <i class="bi bi-file-zip me-2"></i>Download as ZIP
             </button>
-            <button id="openFolder" class="btn btn-secondary btn-bounce">
+            <button id="openFolder" class="btn btn-secondary btn-bounce" disabled>
                 <i class="bi bi-folder me-2"></i>Open Folder
             </button>
             <a href="/history" class="btn btn-info btn-bounce">
@@ -58,27 +68,40 @@
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
+                <p class="mt-2 text-muted">Checking for active downloads...</p>
             </div>
+
+            <div id="no-downloads-message" class="text-center my-4 d-none">
+                <p class="lead">No active downloads found. <a href="/">Start a new download</a>.</p>
+            </div>
+
+            <div id="task-list" class="mt-4">
+                </div>
         </div>
 
-        <div class="toast-container position-fixed bottom-0 end-0 p-3">
-            <div id="completionToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                    <i class="bi bi-check-circle-fill me-2"></i>
-                    <strong class="me-auto">Download Complete</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        <div class="toast-container position-fixed top-50 start-50 translate-middle p-3">
+            <div id="completionToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+                <div class="toast-header bg-primary text-white"> {# Changed to bg-primary #}
+                    <i class="bi bi-check-circle-fill me-2"></i> {# Icon color handled by text-white on toast-header #}
+                    <strong class="me-auto">Download Complete!</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button> {# Added btn-close-white #}
                 </div>
                 <div class="toast-body">
-                    Downloads completed successfully! <span id="toast-completed">0</span> videos downloaded to <span id="toast-folder">downloads</span>.
-                    <div class="mt-2">
-                        <a href="/" class="btn btn-success btn-sm btn-bounce">
-                            <i class="bi bi-house me-1"></i>Go to Home
-                        </a>
+                    Downloads completed successfully! <span id="toast-completed">0</span> videos downloaded to <span id="toast-folder">the downloads folder</span>.
+                    <div class="mt-2 d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="toast">OK</button>
+                        <a href="/history" class="btn btn-primary btn-sm">View Details</a>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
+
+    <footer class="footer text-center">
+        <div class="container">
+            <p class="mb-0">© 2025 StreamSaver. All rights reserved. | <a href="/history">View Download History</a></p>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/progress.js') }}"></script>

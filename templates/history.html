@@ -3,40 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download History</title>
+    <title>StreamSaver - Download History</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="container mt-5">
+    <header class="header text-center">
+        <div class="container">
+            <h1 class="display-4 animate__fadeIn">StreamSaver</h1>
+            <p class="lead animate__fadeIn animate__delay-1s">Your ultimate tool for fast and reliable video downloads.</p>
+        </div>
+    </header>
+
+    <main class="container mt-5">
         <h1 class="mb-4 text-center display-4 fw-bold text-primary animate__fadeIn">Download History</h1>
         
         <div class="card mb-4 shadow-sm animate__fadeInUp">
             <div class="card-body">
-                <a href="/" class="btn btn-success btn-bounce mb-3">
-                    <i class="bi bi-house me-2"></i>Back to Home
-                </a>
+                <div class="d-flex justify-content-between mb-3 flex-wrap gap-2">
+                    <a href="/" class="btn btn-success btn-bounce">
+                        <i class="bi bi-house me-2"></i>Back to Home
+                    </a>
+                    <button id="clearHistoryBtn" class="btn btn-danger btn-bounce">
+                        <i class="bi bi-trash me-2"></i>Clear History
+                    </button>
+                </div>
+
                 {% if history %}
                 <div class="table-responsive">
-                    <table class="table table-striped">
+                    <table class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>Timestamp</th>
-                                <th>URL</th>
-                                <th>Filename</th>
-                                <th>Status</th>
-                                <th>Error</th>
+                                <th scope="col">Timestamp</th>
+                                <th scope="col">URL</th>
+                                <th scope="col">Filename</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Error</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for entry in history %}
                             <tr>
                                 <td>{{ entry.timestamp }}</td>
-                                <td>{{ entry.url or 'N/A' }}</td>
-                                <td>{{ entry.filename or 'N/A' }}</td>
+                                <td class="text-truncate" style="max-width: 250px;" title="{{ entry.url or 'N/A' }}">
+                                    {% if entry.url %}<a href="{{ entry.url }}" target="_blank" class="text-decoration-none">{{ entry.url }}</a>{% else %}N/A{% endif %}
+                                </td>
                                 <td>
-                                    <span class="badge bg-{{ 'success' if entry.status == 'success' else 'danger' if entry.status == 'error' else 'secondary' }}">
+                                    {% if entry.status == 'completed' and entry.filename %}
+                                        {# Assuming filename is the full path, extract folder name for zip download #}
+                                        {% set folder_name = entry.filename.split('/')[-2] if '/' in entry.filename else entry.filename.split('\\')[-2] if '\\' in entry.filename else '' %}
+                                        {% if folder_name %}
+                                            <a href="{{ url_for('download_zip', folder=folder_name) }}" class="text-decoration-none" title="Download ZIP of folder">
+                                                {{ entry.filename.split('/')[-1] if '/' in entry.filename else entry.filename.split('\\')[-1] if '\\' in entry.filename else entry.filename }} <i class="bi bi-file-earmark-zip"></i>
+                                            </a>
+                                        {% else %}
+                                            {{ entry.filename or 'N/A' }}
+                                        {% endif %}
+                                    {% elif entry.status == 'zip_created' and entry.filename %}
+                                        {% set folder_name = entry.filename.split('/')[-1].replace('.zip', '') if '/' in entry.filename else entry.filename.split('\\')[-1].replace('.zip', '') %}
+                                        <a href="{{ url_for('download_zip', folder=folder_name) }}" class="text-decoration-none" title="Download ZIP">
+                                            {{ entry.filename.split('/')[-1] if '/' in entry.filename else entry.filename.split('\\')[-1] }} <i class="bi bi-file-earmark-zip"></i>
+                                        </a>
+                                    {% else %}
+                                        {{ entry.filename or 'N/A' }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if entry.status == 'completed' else 'danger' if entry.status == 'error' else 'warning' if entry.status == 'skipped' else 'info' if entry.status == 'zip_created' else 'secondary' }}">
                                         {{ entry.status|capitalize }}
                                     </span>
                                 </td>
@@ -47,11 +84,46 @@
                     </table>
                 </div>
                 {% else %}
-                <p class="text-center">No download history available.</p>
+                <p class="text-center text-muted">No download history available yet. Start a download from the <a href="/">home page</a>!</p>
                 {% endif %}
             </div>
         </div>
-    </div>
+    </main>
+
+    <footer class="footer text-center">
+        <div class="container">
+            <p class="mb-0">© 2023 StreamSaver. All rights reserved. | <a href="/history">View Download History</a></p>
+        </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+            if (clearHistoryBtn) {
+                clearHistoryBtn.addEventListener('click', async () => {
+                    if (confirm('Are you sure you want to clear all download history? This action cannot be undone.')) {
+                        try {
+                            const response = await fetch('/clear_status', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+                            const data = await response.json();
+                            if (data.status === 'cleared') {
+                                alert('Download history cleared successfully!');
+                                location.reload(); // Reload the page to show empty history
+                            } else {
+                                alert('Failed to clear history: ' + (data.message || 'Unknown error'));
+                            }
+                        } catch (error) {
+                            alert('Error clearing history: ' + error.message);
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
