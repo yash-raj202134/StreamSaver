@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center display-4 fw-bold text-primary animate__fadeIn">Download History</h1>
+        
+        <div class="card mb-4 shadow-sm animate__fadeInUp">
+            <div class="card-body">
+                <a href="/" class="btn btn-success btn-bounce mb-3">
+                    <i class="bi bi-house me-2"></i>Back to Home
+                </a>
+                {% if history %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>URL</th>
+                                <th>Filename</th>
+                                <th>Status</th>
+                                <th>Error</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in history %}
+                            <tr>
+                                <td>{{ entry.timestamp }}</td>
+                                <td>{{ entry.url or 'N/A' }}</td>
+                                <td>{{ entry.filename or 'N/A' }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if entry.status == 'success' else 'danger' if entry.status == 'error' else 'secondary' }}">
+                                        {{ entry.status|capitalize }}
+                                    </span>
+                                </td>
+                                <td>{{ entry.error or '' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-center">No download history available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

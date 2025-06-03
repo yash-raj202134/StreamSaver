@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Downloader</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center display-4 fw-bold text-primary animate__fadeIn">Video Downloader</h1>
+        <p class="lead text-center mb-5 animate__fadeIn animate__delay-1s">Download videos from multiple platforms with ease.</p>
+        
+        <div class="card mb-5 shadow-sm animate__fadeInUp animate__delay-2s">
+            <div class="card-body">
+                <form id="downloadForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="urls" class="form-label">Video URLs (one per line)</label>
+                        <textarea class="form-control" id="urls" name="urls" rows="5" placeholder="Enter video URLs..." required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="folder" class="form-label">Output Folder Name</label>
+                        <input type="text" class="form-control" id="folder" name="folder" placeholder="e.g., MyVideos2023">
+                    </div>
+                    <div class="mb-3">
+                        <label for="filename_pattern" class="form-label">Filename Pattern</label>
+                        <input type="text" class="form-control" id="filename_pattern" name="filename_pattern" placeholder="e.g., %(title)s.%(ext)s">
+                    </div>
+                    <div class="mb-3">
+                        <label for="cookie_file" class="form-label">Cookie File (required for Instagram/Facebook)</label>
+                        <input type="file" class="form-control" id="cookie_file" name="cookie_file" accept=".txt,.cookies">
+                    </div>
+                    <div class="mb-3">
+                        <h5>Advanced Settings</h5>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="auto_zip" name="auto_zip">
+                            <label class="form-check-label" for="auto_zip">Auto-create ZIP archive</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="skip_invalid" name="skip_invalid" checked>
+                            <label class="form-check-label" for="skip_invalid">Skip invalid URLs</label>
+                        </div>
+                        <div class="mt-2">
+                            <label for="parallel_downloads" class="form-label">Parallel Downloads</label>
+                            <input type="number" class="form-control" id="parallel_downloads" name="parallel_downloads" min="1" max="10" value="5">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-bounce w-100">
+                        <i class="bi bi-download me-2"></i>Start Download
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

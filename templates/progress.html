@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Progress</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center display-4 fw-bold text-primary animate__fadeIn">Download Progress</h1>
+        
+        <div class="card mb-4 shadow-sm animate__fadeInUp animate__delay-1s">
+            <div class="card-body">
+                <h5 class="card-title">Download Statistics</h5>
+                <div id="stats" class="row text-center">
+                    <div class="col-md-2 mb-2">
+                        <span class="stat-label">Total:</span> <span id="total">0</span>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <span class="stat-label">Completed:</span> <span id="completed">0</span>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <span class="stat-label">Skipped:</span> <span id="skipped">0</span>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <span class="stat-label">Errors:</span> <span id="errors">0</span>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <span class="stat-label">Pending:</span> <span id="pending">0</span>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <span class="stat-label">Speed:</span> <span id="speed">0</span> MB/s
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-4 d-flex justify-content-center gap-2 flex-wrap animate__fadeInUp animate__delay-2s">
+            <button id="downloadZip" class="btn btn-primary btn-bounce">
+                <i class="bi bi-file-zip me-2"></i>Download as ZIP
+            </button>
+            <button id="openFolder" class="btn btn-secondary btn-bounce">
+                <i class="bi bi-folder me-2"></i>Open Folder
+            </button>
+            <a href="/history" class="btn btn-info btn-bounce">
+                <i class="bi bi-clock-history me-2"></i>View History
+            </a>
+            <a href="/" class="btn btn-success btn-bounce">
+                <i class="bi bi-house me-2"></i>Back to Home
+            </a>
+        </div>
+
+        <div id="progress-container" class="animate__fadeInUp animate__delay-3s">
+            <div id="loading-spinner" class="text-center my-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="completionToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong class="me-auto">Download Complete</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Downloads completed successfully! <span id="toast-completed">0</span> videos downloaded to <span id="toast-folder">downloads</span>.
+                    <div class="mt-2">
+                        <a href="/" class="btn btn-success btn-sm btn-bounce">
+                            <i class="bi bi-house me-1"></i>Go to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/progress.js') }}"></script>
+</body>
+</html>
